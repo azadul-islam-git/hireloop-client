@@ -34,7 +34,7 @@ function Footnote() {
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button
             nativeButton={false}
-            render={<Link href="/sign-up" />}
+            render={<Link href="/signup" />}
             className="h-11 w-full rounded-lg bg-white px-5 text-sm font-medium text-[#050505] hover:bg-white/90 sm:w-auto"
           >
             Create a free account

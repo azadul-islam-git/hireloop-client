@@ -24,8 +24,8 @@ const navLinks = [
   { label: "Pricing", href: "/pricing" },
 ] as const
 
-const signInHref = "/sign-in"
-const getStartedHref = "/get-started"
+const signInHref = "/signin"
+const getStartedHref = "/signup"
 
 function Navbar() {
   const pathname = usePathname()
