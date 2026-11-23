@@ -15,16 +15,30 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
-function SignInForm() {
-  const [showPassword, setShowPassword] = React.useState(false)
+interface SignInFormProps {
+  onSubmit: (data: { email: string; password: string }) => Promise<void>
+}
 
-  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+function SignInForm({ onSubmit }: SignInFormProps): React.JSX.Element {
+  const [showPassword, setShowPassword] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const data = Object.fromEntries(new FormData(event.currentTarget))
-    console.log("sign-in form data:", data)
+    const formData = new FormData(event.currentTarget)
 
-    // TODO: wire up better-auth `signIn.email(data)` here.
+    const data = {
+      email: String(formData.get("email") ?? ""),
+      password: String(formData.get("password") ?? ""),
+    }
+
+    try {
+      setIsLoading(true)
+      await onSubmit(data)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -38,7 +52,7 @@ function SignInForm() {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <label
               htmlFor="signin-email"
@@ -119,9 +133,10 @@ function SignInForm() {
 
           <Button
             type="submit"
+            disabled={isLoading}
             className="h-11 w-full rounded-xl bg-brand text-base text-brand-foreground hover:bg-brand/90"
           >
-            Sign in
+            {isLoading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
 

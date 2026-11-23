@@ -17,6 +17,7 @@ export default function SignUpPage() {
     })
     if (error) {
       console.error("Sign-up failed:", error.message)
+      return
     }
 
     console.log("Sign-up successful:", data)
