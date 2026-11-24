@@ -3,8 +3,10 @@
 import { SignUpForm } from "@/components/auth/sign-up-form"
 import { authClient } from "@/lib/auth-client"
 import type { UserRole } from "@/lib/user-fields"
+import { useRouter } from "next/navigation"
 
 export default function SignUpPage() {
+  const router = useRouter()
   const handleSignUp = async (formData: {
     name: string
     email: string
@@ -22,8 +24,11 @@ export default function SignUpPage() {
       console.error("Sign-up failed:", error.message)
       return
     }
-
     console.log("Sign-up successful:", data)
+
+    if (!error && data) {
+      router.push("/")
+    }
   }
 
   return <SignUpForm onSubmit={handleSignUp} />

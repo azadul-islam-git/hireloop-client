@@ -20,15 +20,19 @@ export const auth = betterAuth({
   // The role is picked while signing up, so it has to be client-writable —
   // but a session must never be able to change it afterwards, otherwise
   // `POST /update-user { role: "admin" }` would be a privilege escalation.
-  // Server-side flows (scripts, an admin plugin) are not served by the
-  // `/update-user` endpoint, so they may still change it.
+  // Server-side flows (scripts, an admin plugin) don't run through that
+  // endpoint, so they may still change it.
   databaseHooks: {
     user: {
       update: {
         before: async (data, ctx) => {
           if (!("role" in data)) return
-          if (data.role === ctx?.context?.session?.user?.role) return
-          if (ctx?.path === "/update-user") return false
+          const currentRole = ctx?.context?.session?.user?.role
+          if (data.role === currentRole) return
+          if (ctx?.path === "/update-user") {
+            // Revert the role, let the rest of the update (name, image…) through.
+            return { data: { role: currentRole } }
+          }
         },
       },
     },

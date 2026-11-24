@@ -9,4 +9,7 @@ export const authClient = createAuthClient({
   plugins: [inferAdditionalFields({ user: userAdditionalFields })],
 })
 
-export const { signIn, signUp, useSession } = createAuthClient()
+// Everything is re-exported from this one instance so session state
+// (`useSession`) and actions (`signOut`, `signIn`, …) share a single store —
+// otherwise signing out would not update components reading the session.
+export const { signIn, signUp, signOut, useSession } = authClient
