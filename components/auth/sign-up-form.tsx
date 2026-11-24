@@ -2,7 +2,16 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, UserIcon } from "lucide-react"
+import {
+  BriefcaseIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  ShieldIcon,
+  UserIcon,
+  type LucideIcon,
+} from "lucide-react"
 
 import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
@@ -14,14 +23,23 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { DEFAULT_USER_ROLE, type UserRole } from "@/lib/user-fields"
+import { cn } from "cn"
 
 interface SignUpFormProps {
   onSubmit: (formData: {
     name: string
     email: string
     password: string
+    role: UserRole
   }) => Promise<void>
 }
+
+const ROLE_OPTIONS: { value: UserRole; label: string; icon: LucideIcon }[] = [
+  { value: "seeker", label: "Job seeker", icon: UserIcon },
+  { value: "recruiter", label: "Recruiter", icon: BriefcaseIcon },
+  { value: "admin", label: "Admin", icon: ShieldIcon },
+]
 
 function SignUpForm({ onSubmit }: SignUpFormProps) {
   const [showPassword, setShowPassword] = React.useState(false)
@@ -36,6 +54,7 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
       name: string
       email: string
       password: string
+      role: UserRole
     }
     console.log("sign-up form data:", data)
 
@@ -149,6 +168,40 @@ function SignUpForm({ onSubmit }: SignUpFormProps) {
               symbols.
             </p>
           </div>
+
+          <fieldset className="space-y-1.5">
+            <legend className="text-sm font-medium text-foreground">
+              I&apos;m joining as
+            </legend>
+            <div className="grid grid-cols-3 gap-2">
+              {ROLE_OPTIONS.map(({ value, label, icon: Icon }) => (
+                <label
+                  key={value}
+                  className={cn(
+                    "relative flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-border/60 bg-background/40 px-2 py-3 text-center transition-colors",
+                    "hover:border-brand/50 hover:bg-brand/5",
+                    "has-checked:border-brand has-checked:bg-brand/10 has-checked:ring-1 has-checked:ring-brand/70",
+                    "has-focus-visible:ring-2 has-focus-visible:ring-brand/70"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value={value}
+                    defaultChecked={value === DEFAULT_USER_ROLE}
+                    className="peer sr-only"
+                  />
+                  <Icon
+                    aria-hidden="true"
+                    className="size-4 text-muted-foreground peer-checked:text-brand"
+                  />
+                  <span className="text-sm leading-tight font-medium">
+                    {label}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           <Button
             type="submit"
