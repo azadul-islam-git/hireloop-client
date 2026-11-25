@@ -135,7 +135,7 @@ function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 px-4 pt-3 pb-2 sm:px-6 lg:px-8">
+    <header className="px-4 pt-3 pb-2 sm:px-6 lg:px-8">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 rounded-2xl border border-border/60 bg-card/70 px-4 shadow-sm backdrop-blur-xl sm:px-5">
         <Logo />
 
