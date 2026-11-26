@@ -1,12 +1,14 @@
 "use client"
 
 import { SignUpForm } from "@/components/auth/sign-up-form"
-import { authClient } from "@/lib/auth-client"
+import { authClient, useSession } from "@/lib/auth-client"
+import { syncSessionTo } from "@/lib/session-sync"
 import type { UserRole } from "@/lib/user-fields"
 import { useRouter } from "next/navigation"
 
 export default function SignUpPage() {
   const router = useRouter()
+  const { refetch } = useSession()
   const handleSignUp = async (formData: {
     name: string
     email: string
@@ -18,16 +20,23 @@ export default function SignUpPage() {
       email: formData.email,
       password: formData.password,
       role: formData.role,
+      // Email sign-up returns the created user below; the callback only
+      // applies to OAuth flows, which don't pick a role yet.
       callbackURL: "/",
     })
     if (error) {
       console.error("Sign-up failed:", error.message)
       return
     }
-    console.log("Sign-up successful:", data)
 
-    if (!error && data) {
+    if (data) {
+      // Wait until the store really holds the new account before navigating,
+      // so the dashboard guard never decides on an empty/stale session.
+      await syncSessionTo(data.user?.email, refetch)
+
+      // Land on the dashboard for the role picked during sign-up.
       router.push("/")
+      router.refresh()
     }
   }
 
