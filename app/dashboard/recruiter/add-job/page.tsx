@@ -24,6 +24,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "cn"
+import { createJob } from "@/lib/actions/jobs"
 
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"]
 
@@ -86,7 +87,7 @@ const AddJobPage = () => {
   // Nothing more complex than native FormData — every control below is
   // uncontrolled and submits a hidden input (Base UI Select/Switch do this
   // too), so one `Object.fromEntries()` collects the whole form.
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const data = Object.fromEntries(new FormData(event.currentTarget))
@@ -96,8 +97,12 @@ const AddJobPage = () => {
       minSalary: data.minSalary ? Number(data.minSalary) : null,
       maxSalary: data.maxSalary ? Number(data.maxSalary) : null,
     }
-
     console.log("add-job form data:", job)
+
+    // send the job data to the database
+    const formData = new FormData(event.currentTarget)
+    const result = await createJob(formData)
+    console.log("created job", result)
   }
 
   return (
